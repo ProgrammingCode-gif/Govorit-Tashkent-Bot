@@ -3,7 +3,7 @@ require('dotenv').config()
 const TelegramBotApi = require('node-telegram-bot-api')
 
 const { keyboards } = require('./keyboards.js')
-const { getMessageInfo, getQueryInfo, sortDates, splitMessage } = require('./utils.js')
+const { getMessageInfo, getQueryInfo, sortDates, splitMessage, getUsersIdByName } = require('./utils.js')
 const { DB } = require('./db.js')
 
 const db = new DB(process.env.DB_URL)
@@ -129,7 +129,8 @@ bot.onText(/Создать:/, async (ctx) => {
     if (user.isAdmin) {
 
         const [date, time, price, guideName, comment] = ctx.text.substring(9).split(', ')
-        if (date && time && price && guideName) {
+        const guideId = getUsersIdByName(guideName)
+        if (date && time && price && guideName && guideId) {
             const response = await db.createNewWalking(date, time, price, guideName, comment)
 
             if (response) {
@@ -154,8 +155,9 @@ bot.onText(/Удалить:/, async (ctx) => {
     if (user.isAdmin) {
 
         const [date, time, guideName] = ctx.text.substring(9).split(', ')
+        const guideId = getUsersIdByName(guideName)
 
-        if (date && time && guideName) {
+        if (date && time && guideName && guideId) {
 
             const response = await db.deleteWalking(date, time, guideName)
             if (response) {
@@ -181,8 +183,9 @@ bot.onText(/Изменить:/, async (ctx) => {
 
     if (user.isAdmin) {
         const [date, time, newTime, price, guideName, comment] = ctx.text.substring(10).split(', ')
+        const guideId = getUsersIdByName(guideName)
 
-        if (date && time && newTime && price && guideName) {
+        if (date && time && newTime && price && guideName && guideId) {
             const response = await db.changeWalking(date, time, newTime, price, guideName, comment)
 
             if (response) {
