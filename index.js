@@ -3,7 +3,7 @@ require('dotenv').config()
 const TelegramBotApi = require('node-telegram-bot-api')
 
 const { keyboards } = require('./keyboards.js')
-const { getMessageInfo, getQueryInfo, sortDates, splitMessage, getUsersIdByName } = require('./utils.js')
+const { getMessageInfo, getQueryInfo, sortDates, splitMessage, getUsersIdByName, removeSpaces } = require('./utils.js')
 const { DB } = require('./db.js')
 
 const db = new DB(process.env.DB_URL)
@@ -128,9 +128,15 @@ bot.onText(/Создать:/, async (ctx) => {
 
     if (user.isAdmin) {
 
-        const [date, time, price, guideName, comment] = ctx.text.substring(9).split(', ')
+        let [date, time, price, guideName, comment] = ctx.text.substring(9).split(', ')
+
+        date = removeSpaces(date)
+        time = removeSpaces(time)
+        price = removeSpaces(price)
+        guideName = removeSpaces(guideName)
+
         const guideId = getUsersIdByName(guideName)
-        if (date && time && price && guideName && guideId) {
+        if (date && time && price && guideName && guideId && !isNaN(+price)) {
             const response = await db.createNewWalking(date, time, price, guideName, comment)
 
             if (response) {
@@ -154,7 +160,12 @@ bot.onText(/Удалить:/, async (ctx) => {
 
     if (user.isAdmin) {
 
-        const [date, time, guideName] = ctx.text.substring(9).split(', ')
+        let [date, time, guideName] = ctx.text.substring(9).split(', ')
+
+        date = removeSpaces(date)
+        time = removeSpaces(time)
+        guideName = removeSpaces(guideName)
+
         const guideId = getUsersIdByName(guideName)
 
         if (date && time && guideName && guideId) {
@@ -182,10 +193,17 @@ bot.onText(/Изменить:/, async (ctx) => {
     const user = await db.getUsersById(userId)
 
     if (user.isAdmin) {
-        const [date, time, newTime, price, guideName, comment] = ctx.text.substring(10).split(', ')
+        let [date, time, newTime, price, guideName, comment] = ctx.text.substring(10).split(', ')
+
+        date = removeSpaces(date)
+        time = removeSpaces(time)
+        newTime = removeSpaces(newTime)
+        price = removeSpaces(price)
+        guideName = removeSpaces(guideName)
+
         const guideId = getUsersIdByName(guideName)
 
-        if (date && time && newTime && price && guideName && guideId) {
+        if (date && time && newTime && price && guideName && guideId && !isNaN(+price)) {
             const response = await db.changeWalking(date, time, newTime, price, guideName, comment)
 
             if (response) {

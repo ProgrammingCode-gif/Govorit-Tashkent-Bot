@@ -59,8 +59,14 @@ function splitMessage(message, maxLength = 4000) {
     return chunks;
 }
 
+function removeSpaces(sentence) {
+    return sentence.replace(/\s+/g, '');
+}
+  
+
 module.exports.getMessageInfo = getMessageInfo
 module.exports.getQueryInfo = getQueryInfo
 module.exports.getUsersIdByName = getUsersIdByName
 module.exports.sortDates = sortDates
 module.exports.splitMessage = splitMessage
+module.exports.removeSpaces = removeSpaces
