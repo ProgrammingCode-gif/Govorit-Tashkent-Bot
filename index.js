@@ -141,7 +141,6 @@ bot.onText(/Создать:/, async (ctx) => {
 
             if (response) {
                 bot.sendMessage(chatId, 'Выход успешно добавлен!✅')
-                return
             } else {
                 bot.sendMessage(chatId, 'Произошла ошибка при добавлении выхода⭕️')
             }
