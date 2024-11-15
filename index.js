@@ -12,10 +12,10 @@ const bot = new TelegramBotApi(process.env.BOT_TOKEN, { polling: true })
 let convert = [{ id: 1, text: "22.22.22 - 300k" }]
 
 bot.setMyCommands([
-    { command: '/start', description: 'Запустить бота' }
+    { command: '/starting', description: 'Запустить бота' }
 ])
 
-bot.onText('/start', async (ctx) => {
+bot.onText('/starting', async (ctx) => {
     const [chatId, , userId] = getMessageInfo(ctx)
     const user = await db.getUsersById(userId)
 
