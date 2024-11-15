@@ -9,8 +9,6 @@ const { DB } = require('./db.js')
 const db = new DB(process.env.DB_URL)
 const bot = new TelegramBotApi(process.env.BOT_TOKEN, { polling: true })
 
-let convert = [{ id: 1, text: "22.22.22 - 300k" }]
-
 bot.setMyCommands([
     { command: '/start', description: 'Запустить бота' }
 ])
@@ -135,12 +133,12 @@ bot.on('callback_query', async (ctx) => {
             const text = ctx.text
             let moneyText = ''
 
-            convert.push({ id: generateUniqueId(), text })
+            await db.updateConvert(text, userId);
+            const convert = await db.getConvertByGuideId(userId)
 
-            bot.sendMessage(chatId, 'Запись успешна введена ✅')
-            await db.updateConvert(convert, userId);
             convert.forEach((note, index) => moneyText += `\n${index + 1}) ${note.text}`)
-
+            bot.sendMessage(chatId, 'Запись успешна введена ✅')
+            
             bot.editMessageText(`Это записи в вашем конверте 🎄📋✨:\n${moneyText}`, { chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup })
             bot.removeListener('message')
         })
@@ -152,11 +150,12 @@ bot.on('callback_query', async (ctx) => {
             const text = ctx.text
             let moneyText = ''
 
-            convert.splice((+text - 1), 1);
-            await db.updateConvert(convert, userId);
-            bot.sendMessage(chatId, "Запись успешно удалена ✅")
+            await db.deleteNoteFromConvert(text, userId);
+            
+            const convert = await db.getConvertByGuideId(userId)
             
             convert.forEach((note, index) => moneyText += `\n${index + 1}) ${note.text}`)
+            bot.sendMessage(chatId, "Запись успешно удалена ✅")
             if(convert.length >= 1) {
                 bot.editMessageText(`Это записи в вашем конверте 🎄📋✨:\n${moneyText}`, { chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup })
             } else {
@@ -175,8 +174,8 @@ bot.on('callback_query', async (ctx) => {
                 bot.sendMessage(chatId, 'Отменено', keyboards.startGuideKeyboard)
                 bot.removeListener('message')
             } else if(text == '✅') {
-                convert = []
-                await db.updateConvert()
+
+                await db.cleanConvert(userId)
 
                 bot.editMessageText(`В вашем конверте пока пусто 🎅📭✨`, {chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup})
                 bot.sendMessage(chatId, 'Конверт успешно очищен ✅', keyboards.startGuideKeyboard)
@@ -322,7 +321,7 @@ bot.onText('Конверт', async (ctx) => {
     }
 
 
-    convert = await db.getConvertByGuideId(userId)
+    const convert = await db.getConvertByGuideId(userId)
     convert.forEach((note, index) => moneyText += `\n${index + 1}) ${note.text}`)
     if(moneyText) {
         bot.sendMessage(chatId, `Это записи в вашем конверте 🎄📋✨:\n${moneyText}`, keyboards.moneyGuideKeyboard)

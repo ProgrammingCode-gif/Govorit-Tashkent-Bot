@@ -1,5 +1,5 @@
 const {MongoClient} = require('mongodb')
-const {getUsersIdByName} = require('./utils')
+const {getUsersIdByName, generateUniqueId} = require('./utils')
 
 class DB {
     constructor(url) {
@@ -152,14 +152,38 @@ class DB {
             return 0;
         }
     }
-    async updateConvert(convert, guideId) {
+    async updateConvert(newNote, guideId) {
         try {
             await this.dbClient.connect()
             const usersCollection = await this.getUsersCollection()
-            usersCollection.updateOne({guideId}, {$set: {convert}})
+            const user = await usersCollection.findOne({guideId})
+            let convert = user.convert
+            convert.push({ id: generateUniqueId(), text: newNote })
+            await usersCollection.updateOne({guideId}, {$set: {convert}})
         } catch (e) {
             console.log('Произошла ошибка при обновлении конверта');
         }
+    }
+    async deleteNoteFromConvert(deletedNote, guideId) {
+        try {
+            await this.dbClient.connect()
+            const usersCollection = await this.getUsersCollection()
+            const user = await usersCollection.findOne({guideId})
+            let convert = user.convert
+            convert.splice((+deletedNote - 1), 1);
+            await usersCollection.updateOne({guideId}, {$set: {convert}})
+        } catch (e) {
+            console.log('Произошла ошибка при обновлении конверта');
+        }
+    }
+    async cleanConvert(guideId) {
+        try {
+            await this.dbClient.connect()
+            const usersCollection = await this.getUsersCollection()
+            await usersCollection.updateOne({guideId}, {$set: {convert: []}})
+        } catch (e) {
+            console.log('Произошла ошибка при очистке конверта');
+        } 
     }
     async updateComment(date, time, newNote) {
         try {
