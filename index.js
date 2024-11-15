@@ -12,17 +12,17 @@ const bot = new TelegramBotApi(process.env.BOT_TOKEN, { polling: true })
 let convert = [{ id: 1, text: "22.22.22 - 300k" }]
 
 bot.setMyCommands([
-    { command: '/starting', description: 'Запустить бота' }
+    { command: '/start', description: 'Запустить бота' }
 ])
 
-bot.onText('/starting', async (ctx) => {
+bot.onText('/start', async (ctx) => {
     const [chatId, , userId] = getMessageInfo(ctx)
     const user = await db.getUsersById(userId)
 
     if (user.isAdmin) {
         return bot.sendPhoto(chatId, './public/img/startAdmin.jpg', keyboards.startAdminKeyboard)
     }
-    return bot.sendPhoto(chatId, './public/img/start.jpeg', keyboards.startGuideKeyboard)
+    return bot.sendPhoto(chatId, './public/img/start.jpg', keyboards.startGuideKeyboard)
 })
 
 bot.onText('Мерч', async (ctx) => {
