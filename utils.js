@@ -62,6 +62,19 @@ function splitMessage(message, maxLength = 4000) {
 function removeSpaces(sentence) {
     return sentence.replace(/\s+/g, '');
 }
+
+function generateUniqueId() {
+    // Get the current timestamp
+    const timestamp = Date.now();
+    
+    // Generate a random number between 0 and 9999
+    const randomNum = Math.floor(Math.random() * 10000);
+    
+    // Combine timestamp and random number to form a unique ID
+    const uniqueId = timestamp * 10000 + randomNum;
+    
+    return uniqueId;
+  }
   
 
 module.exports.getMessageInfo = getMessageInfo
@@ -70,3 +83,4 @@ module.exports.getUsersIdByName = getUsersIdByName
 module.exports.sortDates = sortDates
 module.exports.splitMessage = splitMessage
 module.exports.removeSpaces = removeSpaces
+module.exports.generateUniqueId = generateUniqueId

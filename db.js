@@ -102,44 +102,89 @@ class DB {
         }
     }
 
-    async createNewWalking(date, time, price, guideName, comment) {
+    async createNewWalking(date, time, price, guideName, comment, guideId) {
         try {
             await this.dbClient.connect()
             const walkingsCollection = this.dbClient.db().collection('walkings')
-            const guideId = getUsersIdByName(guideName)
             
             if(guideId) {
                 walkingsCollection.insertOne({date, time, price, guideName, guideId, comment})
                 return 1
             }
 
-            return 0
+            return 0;
         } catch (e) {
             console.log('Произошла ошибка при добавлении выхода');
             return 0
         }
     }
-    async deleteWalking(date, time, guideName) {
+    async deleteWalking(date, time) {
         try {
             await this.dbClient.connect()
             const walkingsCollection = this.dbClient.db().collection('walkings')
-            const guideId = getUsersIdByName(guideName)
-            await walkingsCollection.deleteOne({date: date, time: time, guideName: guideName, guideId: guideId})
+            await walkingsCollection.deleteOne({date, time})
             return 1
         } catch (e) {
             console.log('Произошла ошибка при попытке удаления выхода');
             return 0
         }
     }
-    async changeWalking(date, time, newTime, price, guideName, comment) {
+    async changeWalking(date, time, newTime, price, guideName, comment, guideId) {
         try {
             await this.dbClient.connect()
             const walkingsCollection = this.dbClient.db().collection('walkings')
-            const guideId = getUsersIdByName(guideName)
             await walkingsCollection.updateOne({date: date, time: time}, {$set: {time: newTime, price, guideName, comment, guideId}})
             return 1
         } catch (e) {
             console.log('Произошла ошибка при попытке изменить выход');
+            return 0
+        }
+    }
+    async getConvertByGuideId(guideId) {
+        try {
+            await this.dbClient.connect()
+            const usersCollection = await this.getUsersCollection()
+            const user = await usersCollection.findOne({guideId: guideId})
+            const convert = user.convert
+            return convert
+        } catch (e) {
+            console.log('Произошла ошибка при получении конверта');
+            return 0;
+        }
+    }
+    async updateConvert(convert, guideId) {
+        try {
+            await this.dbClient.connect()
+            const usersCollection = await this.getUsersCollection()
+            usersCollection.updateOne({guideId}, {$set: {convert}})
+        } catch (e) {
+            console.log('Произошла ошибка при обновлении конверта');
+        }
+    }
+    async updateComment(date, time, newNote) {
+        try {
+            await this.dbClient.connect()
+            const walkingsCollection = await this.dbClient.db().collection('walkings')
+            const walking = await walkingsCollection.findOne({date, time})
+            await walkingsCollection.updateOne({date, time}, {$set: {comment: walking.comment + newNote}})
+            return walking.comment + newNote
+        } catch (error) {
+            console.log('Ошибка при получении выхода');
+            return 0;
+        }
+    }
+    async completeWalking(date, time) {
+        try {
+            await this.dbClient.connect()
+            const walkingsCollection = await this.dbClient.db().collection('walkings')
+            const walking = await walkingsCollection.findOneAndUpdate({date, time}, {$set: {comment: '✅'}})
+            if(walking) {
+                return 1
+            } else {
+                return 0
+            }
+        } catch (error) {
+            console.log('Ошибка при получении выхода');
             return 0
         }
     }
