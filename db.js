@@ -190,8 +190,9 @@ class DB {
             await this.dbClient.connect()
             const walkingsCollection = await this.dbClient.db().collection('walkings')
             const walking = await walkingsCollection.findOne({date, time})
-            await walkingsCollection.updateOne({date, time}, {$set: {comment: walking.comment + newNote}})
-            return walking.comment + newNote
+            const newComment = walking.comment ? walking.comment + newNote : newNote
+            await walkingsCollection.updateOne({date, time}, {$set: {comment: newComment}})
+            return newComment
         } catch (error) {
             console.log('Ошибка при получении выхода');
             return 0;

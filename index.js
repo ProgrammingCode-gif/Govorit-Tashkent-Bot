@@ -348,7 +348,7 @@ bot.onText('Список', async(ctx) => {
                 bot.removeListener('message')
                 
                 bot.on('message', async(ctx) => {
-                    const newNote = `\n${ctx.text}`
+                    const newNote = `\n\n${ctx.text}`
                     const comment = await db.updateComment(date, time, newNote)
                     if(comment == 0) {
                         bot.sendMessage(chatId, 'Произошла ошибка при добавлении заметки', keyboards.startAdminKeyboard)
