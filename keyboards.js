@@ -48,8 +48,7 @@ const keyboards = {
             keyboard: [
                 [{text: "Анастасия"}, {text: "Шахзод"}],
                 [{text: "Кристофер"}, {text: "Хожиакбар"}],
-                [{text: "Малик"}, {text: "Мухаммад"}],
-                [{text: "Жохангир"}, {text: "Тамила"}]
+                [{text: "Малик"}, {text: "Шахриер"}],
         ],
             resize_keyboard: true
         })
