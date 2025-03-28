@@ -27,7 +27,7 @@ bot.onText('Мерч', async (ctx) => {
     const [chatId, userName, userId] = getMessageInfo(ctx)
 
     const user = await db.getUsersById(userId)
-    let message = `Здесь вы можете добавить проданный мерч нажав на значок «+» 🎄🎁❄️\n\nЗа этот месяц вы упорным трудом продали:\n\n${user.bags} шопперов 💰\n${user.stickers} стикеров 💸`
+    let message = `Здесь вы можете добавить проданный мерч нажав на значок «+» 👜\n\nЗа этот месяц вы упорным трудом продали:\n\n${user.bags} шопперов 💰\n${user.stickers} стикеров 💸`
 
     bot.sendMessage(chatId, message, keyboards.merchGuideKeyboard)
 })
@@ -45,7 +45,7 @@ bot.onText('Посмотреть выходы', async (ctx) => {
         const walkings = await db.findAllWalkings()
         const walkingsSorted = sortDates(walkings)
         walkingsSorted.forEach(walking => guideWalkingsText += `----------------------------------\n${walking.date}, Время: ${walking.time}, Цена: ${walking.price}, Гид: ${walking.guideName}${walking.comment ? `\n${walking.comment}` : ''}\n\n`)
-        message = walkings.length > 0 ? `Здесь вы можете посмотреть предстоящие выходы 👷‍♂️❄️🎅:\n\n${guideWalkingsText}` : 'Босс, извините, но вы не назначили еще ни одного выхода 🤷‍♂️'
+        message = walkings.length > 0 ? `Здесь вы можете посмотреть предстоящие выходы 👷‍♂️:\n\n${guideWalkingsText}` : 'Босс, извините, но вы не назначили еще ни одного выхода 🤷‍♂️'
 
         const splitedMessage = splitMessage(message)
 
@@ -55,7 +55,7 @@ bot.onText('Посмотреть выходы', async (ctx) => {
     }
 
     userWalkingsSorted.forEach(walking => guideWalkingsText += `----------------------------------\n${walking.date}, Время: ${walking.time}, Цена: ${walking.price}${walking.comment ? `\n${walking.comment}` : ''}\n\n`)
-    message = userWalkings.length > 0 ? `Здесь вы можете посмотреть предстоящие выходы 👷‍♂️❄️🎅:\n\n${guideWalkingsText}` : 'На данный момент у вас нет ни одного выхода, самое время отдохнуть ! 💆‍♂️'
+    message = userWalkings.length > 0 ? `Здесь вы можете посмотреть предстоящие выходы 👷‍♂️:\n\n${guideWalkingsText}` : 'На данный момент у вас нет ни одного выхода, самое время отдохнуть ! 💆‍♂️'
     const splitedMessage = splitMessage(message)
 
     splitedMessage.forEach(msg => bot.sendMessage(chatId, msg))
@@ -121,7 +121,7 @@ bot.on('callback_query', async (ctx) => {
 
         const user = await db.getUsersById(userId)
 
-        bot.editMessageText(`Здесь вы можете добавить проданный мерч нажав на значок «+» 🎄🎁❄️\n\nЗа этот месяц вы упорным трудом продали:\n\n${user.bags} шопперов 💰\n${user.stickers} стикеров 💸`, { chat_id: chatId, message_id: merchMessageId, reply_markup: keyboards.merchGuideKeyboard.reply_markup })
+        bot.editMessageText(`Здесь вы можете добавить проданный мерч нажав на значок «+» 👜\n\nЗа этот месяц вы упорным трудом продали:\n\n${user.bags} шопперов 💰\n${user.stickers} стикеров 💸`, { chat_id: chatId, message_id: merchMessageId, reply_markup: keyboards.merchGuideKeyboard.reply_markup })
     }
 
     if (data == 'addNote') {
@@ -139,7 +139,7 @@ bot.on('callback_query', async (ctx) => {
             convert.forEach((note, index) => moneyText += `\n${index + 1}) ${note.text}`)
             bot.sendMessage(chatId, 'Запись успешна введена ✅')
             
-            bot.editMessageText(`Это записи в вашем конверте 🎄📋✨:\n${moneyText}`, { chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup })
+            bot.editMessageText(`Это записи в вашем конверте 📋:\n${moneyText}`, { chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup })
             bot.removeListener('message')
         })
     } else if (data == 'deleteNote') {
@@ -157,9 +157,9 @@ bot.on('callback_query', async (ctx) => {
             convert.forEach((note, index) => moneyText += `\n${index + 1}) ${note.text}`)
             bot.sendMessage(chatId, "Запись успешно удалена ✅")
             if(convert.length >= 1) {
-                bot.editMessageText(`Это записи в вашем конверте 🎄📋✨:\n${moneyText}`, { chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup })
+                bot.editMessageText(`Это записи в вашем конверте 📋:\n${moneyText}`, { chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup })
             } else {
-                bot.editMessageText(`В вашем конверте пока пусто 🎅📭✨`, { chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup })
+                bot.editMessageText(`В вашем конверте пока пусто 📭`, { chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup })
             }
 
             bot.removeListener('message')
@@ -177,7 +177,7 @@ bot.on('callback_query', async (ctx) => {
 
                 await db.cleanConvert(userId)
 
-                bot.editMessageText(`В вашем конверте пока пусто 🎅📭✨`, {chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup})
+                bot.editMessageText(`В вашем конверте пока пусто 📭`, {chat_id: chatId, message_id: moneyMessageId, reply_markup: keyboards.moneyGuideKeyboard.reply_markup})
                 bot.sendMessage(chatId, 'Конверт успешно очищен ✅', keyboards.startGuideKeyboard)
                 bot.removeListener('message')
             }
@@ -324,9 +324,9 @@ bot.onText('Конверт', async (ctx) => {
     const convert = await db.getConvertByGuideId(userId)
     convert.forEach((note, index) => moneyText += `\n${index + 1}) ${note.text}`)
     if(moneyText) {
-        bot.sendMessage(chatId, `Это записи в вашем конверте 🎄📋✨:\n${moneyText}`, keyboards.moneyGuideKeyboard)
+        bot.sendMessage(chatId, `Это записи в вашем конверте 📋:\n${moneyText}`, keyboards.moneyGuideKeyboard)
     } else {
-        bot.sendMessage(chatId, `В вашем конверте пока пусто 🎅📭✨`, keyboards.moneyGuideKeyboard)
+        bot.sendMessage(chatId, `В вашем конверте пока пусто 📭`, keyboards.moneyGuideKeyboard)
     }
 })
 
