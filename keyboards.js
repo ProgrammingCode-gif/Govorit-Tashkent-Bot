@@ -46,10 +46,10 @@ const keyboards = {
     moneyAdminKeyboard: {
         reply_markup: JSON.stringify({
             keyboard: [
-                [{text: "Анастасия"}, {text: "Шахзод"}],
+                [{text: "Асель"}, {text: "Шахзод"}],
                 [{text: "Кристофер"}, {text: "Хожиакбар"}],
                 [{text: "Малик"}, {text: "Шахриер"}],
-                [{text: "Абдулатиф"}],
+                [{text: "Амин"}, {text: "Амаль"}],
         ],
             resize_keyboard: true
         })
